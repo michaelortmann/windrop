@@ -1,0 +1,121 @@
+Cygwin port of eggdrop 1.9.5 similar to windrop
+
+see also: https://windrop.sourceforge.net
+
+This Eggdrop / Windrop v1.9.5 includes:
+- eggdrop 1.9.5 https://github.com/eggheads/eggdrop
+- patch https://github.com/eggheads/eggdrop/pull/1435
+- botnetop 1.4 module https://github.com/michaelortmann/botnetop.mod
+- gseen 1.4 module https://github.com/michaelortmann/gseen.mod
+- stats 1.7 module https://github.com/michaelortmann/stats.mod
+- openssl 3.1.0
+- tcl 8.6.13 plus patches from https://github.com/tcltk/tcl/commits/core-8-6-branch
+- zlib 1.2.13
+- cygwin 3.4.6
+- 64 bit
+
+windrop-1.9.5-20230315.exe is a 7-Zip self-extracting archive
+
+sha256sum windrop-1.9.5-20230315.exe c5cb0d7d9b212d29b7c91c1f19889bb612eb5f3fde56a65eb410d1b226a6b9e5
+
+This is untested stuff, i hope official windrop will update
+
+How to compile Windrop v1.9.5:
+
+cygwin packages:
+mingw64-x86_64-gcc-core
+
+openssl 3.1.0:
+download https://www.openssl.org/source/openssl-3.1.0.tar.gz
+$ tar -zxvf openssl-3.1.0.tar.gz
+$ cd openssl-3.1.0
+$ ./config --prefix=/home/0/opt/openssl-3.1.0
+$ make
+$ make install
+
+tcl 8.6.13:
+$ git clone https://github.com/tcltk/tcl.git
+$ git checkout f632ecb40650fc82b537e938435e44e2c1f2fb14 (fix generic/tcl.h and eliminate the need for --enable-64bit)
+$ ./configure --prefix=/home/<user>/opt/tcl-8.6.13
+$ make
+$ make install
+
+eggdrop 1.9.5:
+apply patch https://github.com/eggheads/eggdrop/pull/1435
+$ cd src/mod
+$ git clone https://github.com/michaelortmann/botnetop.mod.git
+$ git clone https://github.com/michaelortmann/gseen.mod.git 
+$ git clone https://github.com/michaelortmann/stats.mod.git
+cd ../..
+$ LD_LIBRARY_PATH=/home/0/opt/openssl-3.1.0/lib:/home/0/opt/tcl-8.6.13/lib ./configure --prefix=/home/0/opt/windrop-1.9.5-20230315 --with-ssllib=/home/0/opt/openssl-3.1.0/lib --with-sslinc=/home/0/opt/openssl-3.1.0/include --with-tcllib=/home/0/opt/tcl-8.6.13/lib/libtcl8.6.dll.a --with-tclinc=/home/0/opt/tcl-8.6.13/include/tcl.h
+$ LD_LIBRARY_PATH=/home/0/opt/openssl-3.1.0/lib:/home/0/opt/tcl-8.6.13/lib PATH=$PATH:/home/0/opt/openssl-3.1.0/bin/ make
+$ LD_LIBRARY_PATH=/home/0/opt/openssl-3.1.0/lib:/home/0/opt/tcl-8.6.13/lib PATH=$PATH:/home/0/opt/openssl-3.1.0/bin/ make install
+cd ~/opt/windrop-1.9.5-20230315/
+rm eggdrop.exe
+mv eggdrop.exe-1.9.5 eggdrop.exe
+rm modules
+mv modules-1.9.5 modules
+cp ~/opt/openssl-3.1.0/bin/cygcrypto-3.dll .
+cp ~/opt/openssl-3.1.0/bin/cygssl-3.dll .
+cp /bin/cygwin1.dll  .
+cp /bin/cygz.dll .
+cp ~/opt/tcl-8.6.13/bin/libtcl8.6.dll .
+mkdir lib
+cp -r ~/opt/tcl-8.6.13/lib/tcl8 lib
+cp -r ~/opt/tcl-8.6.13/lib/tcl8.6 lib
+
+test under gnu/linux wine 8.3:
+$ uname
+Linux
+$ wine --version
+wine-8.3 
+$ file eggdrop.exe
+eggdrop.exe: PE32+ executable (console) x86-64, for MS Windows, 20 sections
+$ ./eggdrop.exe -t BotA.conf
+[...]
+Eggdrop v1.9.5+20230315 (C) 1997 Robey Pointer (C) 1999-2023 Eggheads
+--- Loading eggdrop v1.9.5+20230315 (Wed Mar 15 2023)
+[...]
+Hey -HQ!  My name is BotA and I am running eggdrop v1.9.5+20230315, on CYGWIN_NT-10.0-18362 3.4.6-1.x86_64.
+[...]
+.status
+I am BotA, running eggdrop v1.9.5+20230315: 22 users (mem: 272k).
+Configured with: '--prefix=/home/0/opt/windrop-1.9.5-20230315' '--with-ssllib=/home/0/opt/openssl-3.1.0/lib' '--with-sslinc=/home/0/opt/openssl-3.1.0/include' '--with-tcllib=/home/0/opt/tcl-8.6.13/lib/libtcl8.6.dll.a' '--with-tclinc=/home/0/opt/tcl-8.6.13/include/tcl.h'
+[...]
+OS: CYGWIN_NT-10.0-18362 3.4.6-1.x86_64
+[...]
+Tcl version: 8.6.13 (header version 8.6.13)
+[...]
+TLS library: OpenSSL 3.1.0 14 Mar 2023 (header version OpenSSL 3.1.0 14 Mar 2023)
+IPv6 support is enabled.
+Threaded DNS core is enabled.
+[...]
+
+known bugs:
+.die doesnt remove pid.<bot>
+
+UNDER CONSTRUCTION:
+install cygwin 3.4.6 under wine 8.3 not working 20230313, haengt mit bekanntem post install fehler:
+https://bugs.winehq.org/show_bug.cgi?id=54511
+$ wine Downloads/setup-x86_64.exe
+[...]
+select packages:
+autoconf 15-1
+automake 11-1
+binutils 2.40-1
+gcc-core 11.3.0-1
+make 4.4.1-1
+mingw64-x86_64-gcc-core 11.3.0-1
+(
+cygwins openssl can be used:
+openssl 1.1.1t-1
+libssl-devel 1.1.1t-1
+but i used openssl 3.1.0 instead
+)
+(
+cygwins tcl can be used:
+version 8.6.12
+but i used tcl 8.6.13 instead
+)
+zlib 1.2.13-1
+zlib-devel 1.2.13-1
