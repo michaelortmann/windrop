@@ -1,0 +1,138 @@
+Windrop is a Cygwin port of Eggdrop IRC Bot
+
+windrop-1.9.5-20230319.exe is a 7-Zip self-extracting archive
+
+sha256sum windrop-1.9.5-20230319.exe 9942000ee9c71a84fb0fb12b79d884fc60b57ba3a33342a90145dd45d55bc028
+
+This Eggdrop / Windrop v1.9.5 includes:
+- eggdrop 1.9.5 https://github.com/eggheads/eggdrop
+- patch https://github.com/eggheads/eggdrop/pull/1435
+- patch https://github.com/eggheads/eggdrop/pull/1444
+- patch https://github.com/eggheads/eggdrop/pull/1406
+- botnetop 1.4 module https://github.com/michaelortmann/botnetop.mod
+- gseen 1.4 module https://github.com/michaelortmann/gseen.mod
+- stats 1.7 module https://github.com/michaelortmann/stats.mod
+- openssl 3.1.0 https://www.openssl.org
+- tcl 8.6.13 plus patches https://github.com/tcltk/tcl/commits/core-8-6-branch
+- zlib 1.2.13 https://www.zlib.net/
+- cygwin 3.4.6 https://cygwin.com/
+- 64 bit
+
+Last official Windrop release was Windrop 1.8.3, so this alternative was
+created until hopefully the official Windrop team resumes pushing out new
+versions.
+
+Eggdrop: https://www.eggheads.org
+Windrop: https://windrop.sourceforge.net
+
+How to compile Windrop 1.9.5:
+
+Install Cygwin, select packages:
+- autoconf2.7 2.71-2
+- automake1.16 11-1
+- binutils 2.40-1
+- gcc-core 11.3.0-1
+- git 2.39.0-1
+- make 4.4.1-1
+- mingw64-x86_64-gcc-core 11.3.0-1
+- cygwins openssl can be used:
+  openssl 1.1.1t-1 and libssl-devel 1.1.1t-1
+  but i compiled openssl 3.1.0 instead
+- cygwins tcl can be used:
+  tcl 8.6.12-1 and tcl-devel 8.6.12-1
+  but i compiled tcl 8.6.13 instead
+- zlib-devel 1.2.13-1
+
+Compile OpenSSL 3.1.0:
+$ curl -O https://www.openssl.org/source/openssl-3.1.0.tar.gz
+$ tar -zxf openssl-3.1.0.tar.gz
+$ cd openssl-3.1.0
+$ ./config --prefix=/opt/openssl-3.1.0
+$ make
+$ make install
+
+Compile Tcl 8.6:
+$ git clone https://github.com/tcltk/tcl.git
+tcl 8.6.13 doesnt compile under cygwin. workaround is using bleeding edge tcl 8.6 from https://github.com/tcltk/tcl/commits/core-8-6-branch
+commit f632ecb40650fc82b537e938435e44e2c1f2fb14 (fix generic/tcl.h and eliminate the need for --enable-64bit) would suffice but i used 453c27a88e9da3cb50fefe2c4a5fb7a7d09b8afc which has more crash fixes
+$ git checkout 453c27a88e9da3cb50fefe2c4a5fb7a7d09b8afc
+$ cd unix/
+$ ./configure --prefix=/opt/tcl-8.6
+$ make
+$ make install
+
+Compile Eggdrop 1.9.5:
+apply patch from https://github.com/eggheads/eggdrop/pull/1435
+apply patch from https://github.com/eggheads/eggdrop/pull/1444
+$ git cherry-pick ccba4f94d19399162cadf57a13dd17869b9ba29d
+edit version.h and set
+#define EGG_NUMVER 1090502
+#define EGG_PATCH "windrop-20230316"
+$ vi src/version.h
+$ cd src/mod
+$ git clone https://github.com/michaelortmann/botnetop.mod.git
+$ git clone https://github.com/michaelortmann/gseen.mod.git 
+$ git clone https://github.com/michaelortmann/stats.mod.git
+cd ../..
+$ LD_LIBRARY_PATH=/opt/openssl-3.1.0/lib:/opt/tcl-8.6/lib ./configure --prefix=/opt/windrop-1.9.5-20230319 --enable-strip --with-ssllib=/opt/openssl-3.1.0/lib --with-sslinc=/opt/openssl-3.1.0/include --with-tcllib=/opt/tcl-8.6/lib/libtcl8.6.dll.a --with-tclinc=/opt/tcl-8.6/include/tcl.h --disable-tdns
+$ LD_LIBRARY_PATH=/opt/openssl-3.1.0/lib:/opt/tcl-8.6/lib PATH=$PATH:/opt/openssl-3.1.0/bin:/opt/tcl-8.6/bin make config
+$ LD_LIBRARY_PATH=/opt/openssl-3.1.0/lib:/opt/tcl-8.6/lib PATH=$PATH:/opt/openssl-3.1.0/bin:/opt/tcl-8.6/bin make eggdrop
+$ LD_LIBRARY_PATH=/opt/openssl-3.1.0/lib:/opt/tcl-8.6/lib PATH=$PATH:/opt/openssl-3.1.0/bin:/opt/tcl-8.6/bin make install
+$ cp src/mod/botnetop.mod/botnetop.conf /opt/windrop-1.9.5-20230391
+$ cp src/mod/gseen.mod/gseen.conf /opt/windrop-1.9.5-20230319
+$ cp src/mod/stats.mod/stats.conf /opt/windrop-1.9.5-20230319
+$ cp -r src/mod/stats.mod/templates /opt/windrop-1.9.5-20230319
+$ cd /opt/windrop-1.9.5-20230319
+$ rm eggdrop.exe
+$ mv eggdrop.exe-1.9.5 eggdrop.exe
+$ rm -rf modules
+$ mv modules-1.9.5 modules
+$ cp /opt/openssl-3.1.0/bin/cygcrypto-3.dll .
+$ cp /opt/openssl-3.1.0/bin/cygssl-3.dll .
+$ cp /bin/cygwin1.dll  .
+$ cp /bin/cygz.dll .
+$ cp /opt/tcl-8.6/bin/libtcl8.6.dll .
+$ mkdir lib
+$ cp -r /opt/tcl-8.6/lib/tcl8 lib
+$ cp -r /opt/tcl-8.6/lib/tcl8.6 lib
+
+Test under GNU/Linux Wine 8.3:
+$ uname
+Linux
+$ wine --version
+wine-8.3 
+$ file eggdrop.exe
+eggdrop.exe: PE32+ executable (console) x86-64, for MS Windows, 20 sections
+$ ./eggdrop.exe -t BotA.conf
+(or wine eggdrop -t BotA.conf)
+[...]
+Eggdrop v1.9.5+windrop-20230319 (C) 1997 Robey Pointer (C) 1999-2023 Eggheads
+--- Loading eggdrop v1.9.5+windrop-20230319 (Sun Mar 19 2023)
+[...]
+Hey -HQ!  My name is BotA and I am running eggdrop v1.9.5+windrop-20230319, on CYGWIN_NT-10.0-18362 3.4.6-1.x86_64.
+[...]
+[...]
+.status
+I am BotA, running eggdrop v1.9.5+windrop-20230319: 22 users (mem: 282k).
+Online for 00:00 (terminal mode) - CPU: 00:00.67 - Cache hit: 62.5%
+Configured with: '--prefix=/opt/windrop-1.9.5-20230317' '--enable-strip' '--with-ssllib=/opt/openssl-3.1.0/lib' '--with-sslinc=/opt/openssl-3.1.0/include' '--with-tcllib=/opt/tcl-8.6/lib/libtcl8.6.dll.a' '--with-tclinc=/opt/tcl-8.6/include/tcl.h' '--disable-tdns'
+[...]
+OS: CYGWIN_NT-10.0-18362 3.4.6-1.x86_64
+[...]
+Tcl version: 8.6.13 (header version 8.6.13)
+[...]
+TLS library: OpenSSL 3.1.0 14 Mar 2023 (header version OpenSSL 3.1.0 14 Mar 2023)
+IPv6 support is enabled.
+Threaded DNS core is disabled.
+[...]
+
+Known bugs:
+- currently we need to --disbale-tdns under cygwin, maybe cygwin problem, from what i tracked down, it crashes when a detached thread returns and has nothing todo with actual dns functionality. if you still have problems resolving hostnames try also not to load dns module
+- .die doesnt always remove pid.<bot>, maybe only under wine
+- cygwin 3.4.6 cant be installed under wine 8.3, see: https://bugs.winehq.org/show_bug.cgi?id=54511
+
+
+Thanks and Greetings to Eggheads and Windrop teams.
+
+Enjoy,
+Michael
