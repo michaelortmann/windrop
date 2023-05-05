@@ -1,6 +1,6 @@
 Windrop is a Cygwin port of Eggdrop IRC Bot
 
-windrop-1.9.5-20230331.exe is a 7-Zip self-extracting archive
+windrop-1.9.5-20230430.exe is a 7-Zip self-extracting archive
 
 sha256sum windrop-1.9.5-20230430.exe 68d88f0ff4f7693c7980ed2f0917a1a6884dc393708afc283ac974b936cf8ddf
 
@@ -146,7 +146,7 @@ IPv6 support is enabled.
 Threaded DNS core is disabled.
 
 Known bugs:
-- currently we need to --disbale-tdns under cygwin, maybe cygwin problem, from what i tracked down, it crashes when a detached thread returns and has nothing todo with actual dns functionality. if you still have problems resolving hostnames try also not to load dns module
+- currently we need to --disable-tdns under cygwin, maybe cygwin problem, from what i tracked down, it crashes when a detached thread returns and has nothing todo with actual dns functionality. if you still have problems resolving hostnames try also not to load dns module
 - .die doesnt always remove pid.<bot>, maybe only under wine
 - cygwin 3.4.6 cant be installed under wine 8.3, see: https://bugs.winehq.org/show_bug.cgi?id=54511
 - unbound mod may not run under wine (recreate_mmaps_after_fork_failed), but a test on windows was successful so give it a try
