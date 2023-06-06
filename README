@@ -1,8 +1,8 @@
 Windrop is a Cygwin port of Eggdrop IRC Bot
 
-windrop-1.9.5-20230430.exe is a 7-Zip self-extracting archive
+windrop-1.9.5-20230606.exe is a 7-Zip self-extracting archive
 
-sha256sum windrop-1.9.5-20230430.exe 68d88f0ff4f7693c7980ed2f0917a1a6884dc393708afc283ac974b936cf8ddf
+sha256sum windrop-1.9.5-20230606.exe fd686b107b0a05aa90d0c6505108f48e7472908698bd0666e07698782f67029f
 
 This Eggdrop / Windrop v1.9.5 includes:
 - eggdrop 1.9.5 https://github.com/eggheads/eggdrop
@@ -47,11 +47,11 @@ Install Cygwin, select packages:
 - libtool, if you want unbound mod
 - patch, if you want unbound mod
 
-Compile OpenSSL 3.1.0:
-$ curl -O https://www.openssl.org/source/openssl-3.1.0.tar.gz
-$ tar -zxf openssl-3.1.0.tar.gz
-$ cd openssl-3.1.0
-$ ./config --prefix=/opt/openssl-3.1.0
+Compile OpenSSL 3.0.9:
+$ curl -O https://www.openssl.org/source/openssl-3.0.9.tar.gz
+$ tar -zxvf openssl-3.0.9.tar.gz
+$ cd openssl-3.0.9
+$ ./config --prefix=/opt/openssl-3.0.9
 $ make
 $ make install
 
@@ -60,7 +60,7 @@ $ git clone https://github.com/tcltk/tcl.git
 $ cd tcl
 tcl 8.6.13 doesnt compile under cygwin. workaround is using bleeding edge tcl 8.6 from https://github.com/tcltk/tcl/commits/core-8-6-branch
 commit f632ecb40650fc82b537e938435e44e2c1f2fb14 (fix generic/tcl.h and eliminate the need for --enable-64bit) would suffice but i used e5eeaadf3c490991f3360ae3cea60e064e0b2c37 which has more crash fixes
-$ git checkout e5eeaadf3c490991f3360ae3cea60e064e0b2c37
+$ git checkout 43b5729ddf6c0793a6f6bb7c35dd30f4ea9ece17
 $ cd unix
 $ ./configure --prefix=/opt/tcl-8.6
 $ make
@@ -71,17 +71,19 @@ $ curl -O https://www.nlnetlabs.nl/downloads/unbound/unbound-1.17.1.tar.gz
 $ tar -zxvf unbound-1.17.1.tar.gz
 $ cd unbound-1.17.1
 $ patch -p1 -i ../unbound.patch
-$ LD_LIBRARY_PATH=/opt/openssl-3.1.0/lib libtool=libtool ./configure --prefix=/opt/unbound-1.17.1 --with-ssl=/opt/openssl-3.1.0
+$ LD_LIBRARY_PATH=/opt/openssl-3.0.9/lib libtool=libtool ./configure --prefix=/opt/unbound-1.17.1 --with-ssl=/opt/openssl-3.0.9
 $ make
 $ make install
 
 Compile Eggdrop 1.9.5:
 apply patch from https://github.com/eggheads/eggdrop/pull/1435
 apply patch from https://github.com/eggheads/eggdrop/pull/1444
+apply patch from https://github.com/eggheads/eggdrop/pull/1441
 $ git cherry-pick ccba4f94d19399162cadf57a13dd17869b9ba29d
+$ git cherry-pick b3bbab4cafc8ae93852067ceafe433c0a6d7dafc
 edit version.h and set
 #define EGG_NUMVER 1090502
-#define EGG_PATCH "windrop-20230430"
+#define EGG_PATCH "windrop-20230606"
 $ vi src/version.h
 $ cd src/mod
 $ git clone https://github.com/michaelortmann/botnetop.mod.git
@@ -89,11 +91,11 @@ $ git clone https://github.com/michaelortmann/gseen.mod.git
 $ git clone https://github.com/michaelortmann/stats.mod.git
 $ git clone https://github.com/michaelortmann/unbound.mod.git
 cd ../..
-$ CFLAGS="-I/opt/unbound-1.17.1/include -L/opt/unbound-1.17.1/lib -O2" ./configure --prefix=/opt/windrop-1.9.5-20230430 --enable-strip --with-ssllib=/opt/openssl-3.1.0/lib --with-sslinc=/opt/openssl-3.1.0/include --with-tcllib=/opt/tcl-8.6/lib/libtcl8.6.dll.a --with-tclinc=/opt/tcl-8.6/include/tcl.h --disable-tdns
+$ CFLAGS="-I/opt/unbound-1.17.1/include -L/opt/unbound-1.17.1/lib -O2" ./configure --prefix=/opt/windrop-1.9.5-20230606 --enable-strip --with-ssllib=/opt/openssl-3.0.9/lib --with-sslinc=/opt/openssl-3.0.9/include --with-tcllib=/opt/tcl-8.6/lib/libtcl8.6.dll.a --with-tclinc=/opt/tcl-8.6/include/tcl.h --disable-tdns
 $ make config
-$ LD_LIBRARY_PATH=/opt/openssl-3.1.0/lib:/opt/tcl-8.6/lib PATH=$PATH:/opt/openssl-3.1.0/bin:/opt/tcl-8.6/bin make eggdrop
-$ LD_LIBRARY_PATH=/opt/openssl-3.1.0/lib:/opt/tcl-8.6/lib PATH=$PATH:/opt/openssl-3.1.0/bin:/opt/tcl-8.6/bin make install
-EGG=/opt/windrop-1.9.5-20230430
+$ LD_LIBRARY_PATH=/opt/openssl-3.0.9/lib:/opt/tcl-8.6/lib PATH=$PATH:/opt/openssl-3.0.9/bin:/opt/tcl-8.6/bin make eggdrop
+$ LD_LIBRARY_PATH=/opt/openssl-3.0.9/lib:/opt/tcl-8.6/lib PATH=$PATH:/opt/openssl-3.0.9/bin:/opt/tcl-8.6/bin make install
+$ EGG=/opt/windrop-1.9.5-20230606
 $ cp src/mod/botnetop.mod/botnetop.conf $EGG
 $ cp src/mod/gseen.mod/gseen.conf $EGG
 $ cp src/mod/stats.mod/stats.conf $EGG
@@ -103,9 +105,9 @@ $ rm eggdrop.exe
 $ mv eggdrop.exe-1.9.5 eggdrop.exe
 $ rm -rf modules
 $ mv modules-1.9.5 modules
-$ cp /opt/openssl-3.1.0/bin/cygcrypto-3.dll .
-$ cp /opt/openssl-3.1.0/bin/cygssl-3.dll .
-$ cp /bin/cygwin1.dll  .
+$ cp /opt/openssl-3.0.9/bin/cygcrypto-3.dll .
+$ cp /opt/openssl-3.0.9/bin/cygssl-3.dll .
+$ cp /bin/cygwin1.dll .
 $ cp /bin/cygz.dll .
 $ cp /opt/tcl-8.6/bin/libtcl8.6.dll .
 $ mkdir lib
@@ -113,35 +115,34 @@ $ cp -r /opt/tcl-8.6/lib/tcl8 lib
 $ cp -r /opt/tcl-8.6/lib/tcl8.6 lib
 $ cp /opt/unbound-1.17.1/bin/cygunbound-8.dll .
 
-Test under GNU/Linux Wine 8.6:
+Test under GNU/Linux Wine 8.9:
 $ uname
 Linux
 $ wine --version
-wine-8.6
+wine-8.9
 $ file eggdrop.exe
 eggdrop.exe: PE32+ executable (console) x86-64 (stripped to external PDB), for MS Windows, 10 sections
 $ ./eggdrop.exe -t BotA.conf
 (or wine eggdrop -t BotA.conf)
 [...]
-Eggdrop v1.9.5+windrop-20230430 (C) 1997 Robey Pointer (C) 1999-2023 Eggheads
---- Loading eggdrop v1.9.5+windrop-20230430 (Tue May  2 2023)
+Eggdrop v1.9.5+windrop-20230606 (C) 1997 Robey Pointer (C) 1999-2023 Eggheads
+--- Loading eggdrop v1.9.5+windrop-20230606 (Tue Jun  6 02:17:55 2023)
 [...]
-Hey -HQ!  My name is BotA and I am running eggdrop v1.9.5+windrop-20230430, on CYGWIN_NT-10.0-18362 3.4.6-1.x86_64.
+Hey -HQ!  My name is BotA and I am running eggdrop v1.9.5+windrop-20230606, on CYGWIN_NT-10.0-18362 3.4.6-1.x86_64.
 [...]
 .status
-I am BotA, running eggdrop v1.9.5+windrop-20230430: 22 users (mem: 279k).
-Online for 00:00 (terminal mode) - CPU: 00:01.36 - Cache hit: 66.7%
-Configured with: '--prefix=/opt/windrop-1.9.5-20230430' '--enable-strip' '--with-ssllib=/opt/openssl-3.1.0/lib' '--with-sslinc= /opt/openssl-3.1.0/include' '--with-tcllib=/opt/tcl-8.6/lib/libtcl8.6.dll.a' '--with-tclinc=/opt/tcl-8.6/include/tcl.h' '--disa ble-tdns' 'CFLAGS=-I/opt/unbound-1.17.1/include -L/opt/unbound-1.17.1/lib -O2'
+I am BotA, running eggdrop v1.9.5+windrop-20230606: 22 users (mem: 279k).
+Online for 00:01 (terminal mode) - CPU: 00:02.15 - Cache hit: 66.7%
+Configured with: '--prefix=/opt/windrop-1.9.5-20230606' '--enable-strip' '--with-ssllib=/opt/openssl-3.0.9/lib' '--with-sslinc= /opt/openssl-3.0.9/include' '--with-tcllib=/opt/tcl-8.6/lib/libtcl8.6.dll.a' '--with-tclinc=/opt/tcl-8.6/include/tcl.h' '--disa ble-tdns' 'CFLAGS=-I/opt/unbound-1.17.1/include -L/opt/unbound-1.17.1/lib -O2'
 Admin: Lamer <email: lamer@lamest.lame.org>
 Config file: BotA.conf
 OS: CYGWIN_NT-10.0-18362 3.4.6-1.x86_64
-Process ID: 1017 (parent 1)
+Process ID: 1026 (parent 1)
 Tcl library: /tcl8.6.13/library
 Tcl version: 8.6.13 (header version 8.6.13)
 Tcl is threaded.
 TLS support is enabled.
-TLS library:
-OpenSSL 3.1.0 14 Mar 2023 (header version OpenSSL 3.1.0 14 Mar 2023)
+TLS library: OpenSSL 3.0.9 30 May 2023 (header version OpenSSL 3.0.9 30 May 2023)
 IPv6 support is enabled.
 Threaded DNS core is disabled.
 
@@ -149,7 +150,7 @@ Known bugs:
 - currently we need to --disable-tdns under cygwin, maybe cygwin problem, from what i tracked down, it crashes when a detached thread returns and has nothing todo with actual dns functionality. if you still have problems resolving hostnames try also not to load dns module
 - .die doesnt always remove pid.<bot>, maybe only under wine
 - cygwin 3.4.6 cant be installed under wine 8.3, see: https://bugs.winehq.org/show_bug.cgi?id=54511
-- unbound mod may not run under wine (recreate_mmaps_after_fork_failed), but a test on windows was successful so give it a try
+- unbound mod may not run under wine (recreate_mmaps_after_fork_failed), but a test on windows was successful so give it a try. it honors prefer-ipv6 setting
 
 Thanks and Greetings to Eggheads and Windrop teams.
 
