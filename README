@@ -85,9 +85,9 @@ $ git clone https://github.com/michaelortmann/eggdrop.git
 $ git cherry-pick ..0c48844ca51ef7ad8355b29c44f7f903da9928c5
 # apply patch https://github.com/eggheads/eggdrop/pull/1435
 $ git cherry-pick ..fb9c9ed980f61fbae21c4db6224904a7b199ec90
-# apply  https://github.com/eggheads/eggdrop/pull/1444
+# apply patch https://github.com/eggheads/eggdrop/pull/1444
 $ git cherry-pick ..ccba4f94d19399162cadf57a13dd17869b9ba29d
-# apply https://github.com/eggheads/eggdrop/pull/1460
+# apply patch https://github.com/eggheads/eggdrop/pull/1460
 $ git cherry-pick ..42eb9a61745fcab48f7aeb50e6e91a1af9bfaa08
 $ vi src/version.h
 # define EGG_PATCH "windrop-20230803"
