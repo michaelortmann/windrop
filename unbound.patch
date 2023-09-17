@@ -1,22 +1,3 @@
-diff -ru unbound-1.17.1.orig/services/listen_dnsport.c unbound-1.17.1/services/listen_dnsport.c
---- unbound-1.17.1.orig/services/listen_dnsport.c	2023-01-12 09:18:31.000000000 +0100
-+++ unbound-1.17.1/services/listen_dnsport.c	2023-08-03 15:00:28.727393566 +0200
-@@ -505,15 +505,6 @@
- 		 * disabled by default for datagrams anyway, so we set
- 		 * the MTU to use.
- 		 */
--		if (setsockopt(s, IPPROTO_IPV6, IPV6_MTU,
--			(void*)&mtu, (socklen_t)sizeof(mtu)) < 0) {
--			log_err("setsockopt(..., IPV6_MTU, ...) failed: %s",
--				sock_strerror(errno));
--			sock_close(s);
--			*noproto = 0;
--			*inuse = 0;
--			return -1;
--		}
- #   elif defined(IPV6_USER_MTU)
- 		/* As later versions of the mingw crosscompiler define
- 		 * IPV6_MTU, do the same for windows but use IPV6_USER_MTU
 diff -ru unbound-1.17.1.orig/smallapp/unbound-control.c unbound-1.17.1/smallapp/unbound-control.c
 --- unbound-1.17.1.orig/smallapp/unbound-control.c	2023-01-12 09:18:31.000000000 +0100
 +++ unbound-1.17.1/smallapp/unbound-control.c	2023-08-03 15:39:08.445948263 +0200
