@@ -1,8 +1,8 @@
 Windrop is a Cygwin port of Eggdrop IRC Bot
 
-windrop-1.9.5-20240203.exe is a 7-Zip self-extracting archive
+windrop-1.9.5-20240213.exe is a 7-Zip self-extracting archive
 
-sha256sum windrop-1.9.5-20240203.exe dfdcd36665aa98c7e0afa0c07f3cc2ed209d22c617bcdc844b15a322532e6010
+sha256sum windrop-1.9.5-20240213.exe 3cbb9af3ded678397cd184278a4a48af56299fbd470183569f29e2117e70c052
 
 This Eggdrop / Windrop v1.9.5 includes:
 - eggdrop 1.9.5 https://github.com/eggheads/eggdrop
@@ -15,7 +15,7 @@ This Eggdrop / Windrop v1.9.5 includes:
 - cygwin 3.5.0 https://cygwin.com
 - openssl 3.2.1 https://www.openssl.org
 - tcl 8.6.13 plus patches https://github.com/tcltk/tcl/tree/core-8-6-branch
-- unbound 1.19.0 plus patches (IPV6_MTU and libtool)
+- unbound 1.19.1 plus patches (IPV6_MTU and libtool)
 - zlib 1.3.1 https://www.zlib.net
 - 64 bit
 
@@ -31,14 +31,14 @@ How to compile Windrop 1.9.5:
 Install Cygwin, select packages:
 - autoconf2.7 2.72-1
 - automake1.16 1.16.5-1
-- binutils 2.41-3
+- binutils 2.42-1
 - gcc-core 11.4.0-1
 - git 2.43.0-1
 - make 4.4.1-2
 - mingw64-x86_64-gcc-core 11.4.0-1
 - cygwins openssl can be used:
-  libssl3 3.0.12-1 and openssl 3.0.12-1
-  but i compiled openssl 3.2.0 instead
+  libssl3 3.0.13-1 and openssl 3.0.13-1
+  but i compiled openssl 3.2.1 instead
 - cygwins tcl can be used:
   tcl 8.6.12-1 and tcl-devel 8.6.12-1
   but i compiled tcl 8.6.13 instead
@@ -61,7 +61,7 @@ $ cd tcl
 # tcl 8.6.13 doesnt compile under cygwin. workaround is using bleeding edge tcl 8.6 from https://github.com/tcltk/tcl/tree/core-8-6-branch
 # commit f632ecb40650fc82b537e938435e44e2c1f2fb14 (fix generic/tcl.h and eliminate the need for --enable-64bit) would suffice but i used core-8-6-branch, which has more crash and windows fixes and zlib 1.3
 $ git checkout core-8-6-branch
-# as of time of this writing core-8-6-branch is commit 219d48f46ebefc71ec4151526ccd24bafebdd837 from 20240201
+# as of time of this writing core-8-6-branch is commit 58afe9245b6b5fdd7edeae0bbd2f469147364995 from 20240208
 # currently i need to revert 1 commit, because eggdrop needs libtcl8.6.dll.a
 $ git revert b29ad5dcf260d9aa15a3a6ec5ff68a6cea255dd1
 $ cd unix
@@ -71,35 +71,36 @@ $ make install
 # the following manual copy is also because eggdrop needs libtcl8.6.dll.a
 $ cp libtcl8.6.dll.a /opt/tcl-8.6/lib/
 
-Compile Unbound 1.19.0
-$ curl -O https://nlnetlabs.nl/downloads/unbound/unbound-1.19.0.tar.gz
-$ tar -zxvf unbound-1.19.0.tar.gz
-$ cd unbound-1.19.0
+Compile Unbound 1.19.1
+$ curl -O https://nlnetlabs.nl/downloads/unbound/unbound-1.19.1.tar.gz
+$ tar -zxvf unbound-1.19.1.tar.gz
+$ cd unbound-1.19.1
 $ patch -p1 -i ../unbound.patch
-$ LD_LIBRARY_PATH=/opt/openssl-3.2.1/lib libtool=libtool ./configure --prefix=/opt/unbound-1.19.0 --with-ssl=/opt/openssl-3.2.1
+$ LD_LIBRARY_PATH=/opt/openssl-3.2.1/lib libtool=libtool ./configure --prefix=/opt/unbound-1.19.1 --with-ssl=/opt/openssl-3.2.1
 $ make
 $ make install
 
 Compile Eggdrop 1.9.5:
 $ git clone https://github.com/michaelortmann/eggdrop.git
-# as of time of this writing master branch develop is commit d604d82c3c2572790df91672ce0935811ec97e65 from 20240128
+# as of time of this writing master branch develop is commit f29429541c121fe86a24ffed54be89168b9c07a8 from 20240211
+$ cd eggdrop
 # apply patch https://github.com/eggheads/eggdrop/pull/1406
 $ git merge origin/ident2
 # apply patch https://github.com/eggheads/eggdrop/pull/1460
 $ git merge origin/thread.join
 $ vi src/version.h
-# define EGG_PATCH "windrop-20240203"
+# define EGG_PATCH "windrop-20240213"
 $ cd src/mod
 $ git clone https://github.com/michaelortmann/botnetop.mod.git
 $ git clone https://github.com/michaelortmann/gseen.mod.git 
 $ git clone https://github.com/michaelortmann/stats.mod.git
 $ git clone https://github.com/michaelortmann/unbound.mod.git
 $ cd ../..
-$ CFLAGS="-I/opt/unbound-1.19.0/include -L/opt/unbound-1.19.0/lib -O2" ./configure --prefix=/opt/windrop-1.9.5-20240203 --enable-strip --with-ssllib=/opt/openssl-3.2.1/lib --with-sslinc=/opt/openssl-3.2.1/include --with-tcllib=/opt/tcl-8.6/lib/libtcl8.6.dll.a --with-tclinc=/opt/tcl-8.6/include/tcl.h
+$ EGG=/opt/windrop-1.9.5-20240213
+$ CFLAGS="-I/opt/unbound-1.19.1/include -L/opt/unbound-1.19.1/lib -O2" ./configure --prefix=$EGG --enable-strip --with-ssllib=/opt/openssl-3.2.1/lib --with-sslinc=/opt/openssl-3.2.1/include --with-tcllib=/opt/tcl-8.6/lib/libtcl8.6.dll.a --with-tclinc=/opt/tcl-8.6/include/tcl.h
 $ make config
 $ LD_LIBRARY_PATH=/opt/openssl-3.2.1/lib:/opt/tcl-8.6/lib PATH=$PATH:/opt/openssl-3.2.1/bin:/opt/tcl-8.6/bin make eggdrop
 $ LD_LIBRARY_PATH=/opt/openssl-3.2.1/lib:/opt/tcl-8.6/lib PATH=$PATH:/opt/openssl-3.2.1/bin:/opt/tcl-8.6/bin make install
-$ EGG=/opt/windrop-1.9.5-20240203
 $ cp src/mod/botnetop.mod/botnetop.conf $EGG
 $ cp src/mod/gseen.mod/gseen.conf $EGG
 $ cp src/mod/gseen.mod/*.lang $EGG/language/
@@ -119,7 +120,7 @@ $ cp /opt/tcl-8.6/bin/libtcl8.6.dll .
 $ mkdir lib
 $ cp -r /opt/tcl-8.6/lib/tcl8 lib
 $ cp -r /opt/tcl-8.6/lib/tcl8.6 lib
-$ cp /opt/unbound-1.19.0/bin/cygunbound-8.dll .
+$ cp /opt/unbound-1.19.1/bin/cygunbound-8.dll .
 
 Test under GNU/Linux Wine wine-8.21:
 $ uname
@@ -131,18 +132,18 @@ eggdrop.exe: PE32+ executable (console) x86-64 (stripped to external PDB), for M
 $ ./eggdrop.exe -t BotA.conf
 (or wine eggdrop -t BotA.conf)
 [...]
-Eggdrop v1.9.5+windrop-20240203 (C) 1997 Robey Pointer (C) 2010-2024 Eggheads
---- Loading eggdrop v1.9.5+windrop-20240203 (Sat Feb  3 2024)
+Eggdrop v1.9.5+windrop-20240213 (C) 1997 Robey Pointer (C) 2010-2024 Eggheads
+--- Loading eggdrop v1.9.5+windrop-20240213 (Tue Feb 13 2024)
 [...]
-Hey -HQ!  My name is BotA and I am running eggdrop v1.9.5+windrop-20240203, on CYGWIN_NT-10.0-18362 3.5.0-1.x86_64.
+Hey -HQ!  My name is BotA and I am running eggdrop v1.9.5+windrop-20240213, on CYGWIN_NT-10.0-18362 3.5.0-1.x86_64.
 [...]
 .status
 [...]
-I am BotA, running eggdrop v1.9.5+windrop-20240203: 28 users (mem: 293k).
-Online for 00:01 (terminal mode) - CPU: 00:01.77 - Cache hit: 66.7%
-Configured with: '--prefix=/opt/windrop-1.9.5-20240203' '--enable-strip' '--with-ssllib=/opt/openssl-3.2.1/lib' '--with-sslin
-c=/opt/openssl-3.2.1/include' '--with-tcllib=/opt/tcl-8.6/lib/libtcl8.6.dll.a' '--with-tclinc=/opt/tcl-8.6/include/tcl.h' 'CF
-LAGS=-I/opt/unbound-1.19.0/include -L/opt/unbound-1.19.0/lib -O2'
+I am BotA, running eggdrop v1.9.5+windrop-20240213: 28 users (mem: 293k).
+Online for 00:00 (terminal mode) - CPU: 00:00.85 - Cache hit: 66.7%
+Configured with: '--prefix=/opt/windrop-1.9.5-20240213' '--enable-strip' '--with-ssllib=/opt/openssl-3.2.1/lib' '--with-sslinc=
+/opt/openssl-3.2.1/include' '--with-tcllib=/opt/tcl-8.6/lib/libtcl8.6.dll.a' '--with-tclinc=/opt/tcl-8.6/include/tcl.h' 'CFLAGS
+=-I/opt/unbound-1.19.1/include -L/opt/unbound-1.19.1/lib -O2'
 Admin: Lamer <email: lamer@lamest.lame.org>
 Config file: BotA.conf
 OS: CYGWIN_NT-10.0-18362 3.5.0-1.x86_64
