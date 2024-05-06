@@ -1,14 +1,13 @@
 Windrop is a Cygwin port of Eggdrop IRC Bot
 
-windrop-1.9.5-20240420.exe is a 7-Zip self-extracting archive
+windrop-1.9.5-20240506.exe is a 7-Zip self-extracting archive
 
-sha256sum windrop-1.9.5-20240420.exe ce9993ac1422f8ccca3b7201a88dab3b3545bc9e794f4cd4cd20000c07ab609e 
+sha256sum windrop-1.9.5-20240506.exe 4076a56de0f66a0bc9b052263f6203500c1144baca7d6dd3727c4e0e1295bb1e
 
-This Eggdrop / Windrop v1.9.5 includes:
-- eggdrop 1.9.5 https://github.com/eggheads/eggdrop
+This Eggdrop / Windrop 1.9.5-20240506 includes:
+- eggdrop 1.9.5-git https://github.com/eggheads/eggdrop
 - patch https://github.com/eggheads/eggdrop/pull/1406
-- patch https://github.com/eggheads/eggdrop/pull/1460
-- patch https://github.com/eggheads/eggdrop/pull/1557
+- patch https://github.com/eggheads/eggdrop/pull/1578
 - botnetop 1.4 module https://github.com/michaelortmann/botnetop.mod
 - gseen 1.4.2 module https://github.com/michaelortmann/gseen.mod
 - stats 1.11 module https://github.com/michaelortmann/stats.mod
@@ -27,7 +26,7 @@ versions.
 Eggdrop: https://www.eggheads.org
 Windrop: https://windrop.sourceforge.net
 
-How to compile Windrop 1.9.5:
+How to compile (steps to reproduce) Windrop 1.9.5-20240506:
 
 Install Cygwin, select packages:
 - autoconf2.7 2.72-1
@@ -82,16 +81,14 @@ $ make install
 
 Compile Eggdrop 1.9.5:
 $ git clone https://github.com/michaelortmann/eggdrop.git
-# as of time of this writing master branch develop is commit 426f33f7a93ff665c9e19bb172d570224c5f3671 from 20240414
+# as of time of this writing master branch develop is commit 134c18162a939634e161cf8e9568fa1b8bfc8f01 from 20240506
 $ cd eggdrop
 # apply patch https://github.com/eggheads/eggdrop/pull/1406
 $ git merge origin/ident2
-# apply patch https://github.com/eggheads/eggdrop/pull/1460
-$ git merge origin/thread.join
-# apply patch https://github.com/eggheads/eggdrop/pull/1557
-$ git merge origin/tdns.thread.putlog
+# apply patch https://github.com/eggheads/eggdrop/pull/1578
+$ git merge origin/bin.mod.compat
 $ vi src/version.h
-# define EGG_PATCH "windrop-20240420"
+# define EGG_PATCH "windrop-20240506"
 $ cd src/mod
 $ git clone https://github.com/michaelortmann/botnetop.mod.git
 $ git clone https://github.com/michaelortmann/gseen.mod.git 
@@ -128,22 +125,23 @@ Test under GNU/Linux Wine:
 $ uname
 Linux
 $ wine --version
-wine-9.6
+wine-9.8
 $ file eggdrop.exe
 eggdrop.exe: PE32+ executable (console) x86-64 (stripped to external PDB), for MS Windows, 10 sections
 $ ./eggdrop.exe -t BotA.conf
 (or wine eggdrop -t BotA.conf)
 [...]
-Eggdrop v1.9.5+windrop-20240420 (C) 1997 Robey Pointer (C) 2010-2024 Eggheads
---- Loading eggdrop v1.9.5+windrop-20240420 (Sat Apr 20 2024)
+Eggdrop v1.9.5+windrop-20240506 (C) 1997 Robey Pointer (C) 2010-2024 Eggheads
+--- Loading eggdrop v1.9.5+windrop-20240506 (Mon May  6 2024)
 [...]
-Hey -HQ!  My name is BotA and I am running eggdrop v1.9.5+windrop-20240420, on CYGWIN_NT-10.0-18362 3.5.3-1.x86_64.
+Hey -HQ!  My name is BotA and I am running eggdrop v1.9.5+windrop-20240506, on CYGWIN_NT-10.0-18362 3.5.3-1.x86_64.
 [...]
 .status
 [...]
-I am BotA, running eggdrop v1.9.5+windrop-20240420: 28 users (mem: 295k).
-Online for 00:00 (terminal mode) - CPU: 00:00.20 - Cache hit: 66.7%
-Configured with: '--prefix=/opt/windrop-1.9.5-20240420' '--enable-strip' '--with-ssllib=/opt/openssl-3.3.0/lib' '--with-sslinc=/opt/openssl-3.3.0/include' '--with-tcllib=/opt/tcl-8.6.14/lib/libtcl8.6.dll.a' '--with-tclinc=/opt/tcl-8.6.14/include/tcl.h' 'CFLAGS=-I/opt/unbound-1.19.3/include -L/opt/unbound-1.19.3/lib -O2'
+I am BotA, running eggdrop v1.9.5+windrop-20240506: 27 users (mem: 284k).
+Online for 00:00 (terminal mode) - CPU: 00:01.20 - Cache hit: 66.7%
+Configured with: '--prefix=/opt/windrop-1.9.5-20240506' '--enable-strip' '--with-ssllib=/opt/openssl-3.3.0/lib' '--with-sslinc=/opt/openssl-3.3.0/include' '--with-tcllib=/opt/tcl-8.6.14/lib/libtcl8.6.dll.a' '--with-tclinc=/opt/tcl-8.6.14/include/tcl.h' 'C
+FLAGS=-I/opt/unbound-1.19.3/include -L/opt/unbound-1.19.3/lib -O2'
 Admin: Lamer <email: lamer@lamest.lame.org>
 Config file: BotA.conf
 OS: CYGWIN_NT-10.0-18362 3.5.3-1.x86_64
