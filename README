@@ -1,21 +1,21 @@
 Windrop is a Cygwin port of Eggdrop IRC Bot
 
-windrop-1.9.5-20240506.exe is a 7-Zip self-extracting archive
+windrop-1.9.5-20240509.exe is a 7-Zip self-extracting archive
 
-sha256sum windrop-1.9.5-20240506.exe 4076a56de0f66a0bc9b052263f6203500c1144baca7d6dd3727c4e0e1295bb1e
+sha256sum windrop-1.9.5-20240509.exe f795f0e82c8e04fb4d7ee2a3d71b1946cc8aa8380767dfd83c3599e044f45040
 
-This Eggdrop / Windrop 1.9.5-20240506 includes:
+This Eggdrop / Windrop 1.9.5-20240509 includes:
 - eggdrop 1.9.5-git https://github.com/eggheads/eggdrop
 - patch https://github.com/eggheads/eggdrop/pull/1406
 - patch https://github.com/eggheads/eggdrop/pull/1578
 - botnetop 1.4 module https://github.com/michaelortmann/botnetop.mod
 - gseen 1.4.2 module https://github.com/michaelortmann/gseen.mod
 - stats 1.11 module https://github.com/michaelortmann/stats.mod
-- unbound 1.0 module https://github.com/michaelortmann/unbound.mod
+- unbound 1.1 module https://github.com/michaelortmann/unbound.mod
 - cygwin 3.5.3 https://cygwin.com
 - openssl 3.3.0 https://www.openssl.org
 - tcl 8.6.14
-- unbound 1.19.3 plus patches (IPV6_MTU and libtool) https://www.nlnetlabs.nl/projects/unbound/about
+- unbound 1.20.0 plus patches (IPV6_MTU and libtool) https://www.nlnetlabs.nl/projects/unbound/about
 - zlib 1.3.1 https://www.zlib.net
 - 64 bit
 
@@ -26,7 +26,7 @@ versions.
 Eggdrop: https://www.eggheads.org
 Windrop: https://windrop.sourceforge.net
 
-How to compile (steps to reproduce) Windrop 1.9.5-20240506:
+How to compile (steps to reproduce) Windrop 1.9.5-20240509:
 
 Install Cygwin, select packages:
 - autoconf2.7 2.72-1
@@ -49,7 +49,7 @@ Install Cygwin, select packages:
 
 Compile OpenSSL 3.3.0:
 $ curl -O https://www.openssl.org/source/openssl-3.3.0.tar.gz
-$ tar -zxvf openssl-3.3.0.tar.gz
+$ tar -zxf openssl-3.3.0.tar.gz
 $ cd openssl-3.3.0
 $ ./config --prefix=/opt/openssl-3.3.0
 $ make
@@ -70,12 +70,12 @@ $ make install
 # the following manual copy is also because eggdrop needs libtcl8.6.dll.a
 $ cp libtcl8.6.dll.a /opt/tcl-8.6.14/lib/
 
-Compile Unbound 1.19.3
-$ curl -O https://nlnetlabs.nl/downloads/unbound/unbound-1.19.3.tar.gz
-$ tar -zxvf unbound-1.19.3.tar.gz
-$ cd unbound-1.19.3
+Compile Unbound 1.20.0
+$ curl -O https://nlnetlabs.nl/downloads/unbound/unbound-1.20.0.tar.gz
+$ tar -zxf unbound-1.20.0.tar.gz
+$ cd unbound-1.20.0
 $ patch -p1 -i ../unbound.patch
-$ LD_LIBRARY_PATH=/opt/openssl-3.3.0/lib libtool=libtool ./configure --prefix=/opt/unbound-1.19.3 --with-ssl=/opt/openssl-3.3.0
+$ LD_LIBRARY_PATH=/opt/openssl-3.3.0/lib libtool=libtool ./configure --prefix=/opt/unbound-1.20.0 --with-ssl=/opt/openssl-3.3.0
 $ make
 $ make install
 
@@ -88,15 +88,15 @@ $ git merge origin/ident2
 # apply patch https://github.com/eggheads/eggdrop/pull/1578
 $ git merge origin/bin.mod.compat
 $ vi src/version.h
-# define EGG_PATCH "windrop-20240506"
+# define EGG_PATCH "windrop-20240509"
 $ cd src/mod
 $ git clone https://github.com/michaelortmann/botnetop.mod.git
 $ git clone https://github.com/michaelortmann/gseen.mod.git 
 $ git clone https://github.com/michaelortmann/stats.mod.git
 $ git clone https://github.com/michaelortmann/unbound.mod.git
 $ cd ../..
-$ EGG=/opt/windrop-1.9.5-20240420
-$ CFLAGS="-I/opt/unbound-1.19.3/include -L/opt/unbound-1.19.3/lib -O2" ./configure --prefix=$EGG --enable-strip --with-ssllib=/opt/openssl-3.3.0/lib --with-sslinc=/opt/openssl-3.3.0/include --with-tcllib=/opt/tcl-8.6.14/lib/libtcl8.6.dll.a --with-tclinc=/opt/tcl-8.6.14/include/tcl.h
+$ EGG=/opt/windrop-1.9.5-20240509
+$ CFLAGS="-I/opt/unbound-1.20.0/include -L/opt/unbound-1.20.0/lib -O2" ./configure --prefix=$EGG --enable-strip --with-ssllib=/opt/openssl-3.3.0/lib --with-sslinc=/opt/openssl-3.3.0/include --with-tcllib=/opt/tcl-8.6.14/lib/libtcl8.6.dll.a --with-tclinc=/opt/tcl-8.6.14/include/tcl.h
 $ make config
 $ LD_LIBRARY_PATH=/opt/openssl-3.3.0/lib:/opt/tcl-8.6.14/lib PATH=$PATH:/opt/openssl-3.3.0/bin:/opt/tcl-8.6.14/bin make eggdrop
 $ LD_LIBRARY_PATH=/opt/openssl-3.3.0/lib:/opt/tcl-8.6.14/lib PATH=$PATH:/opt/openssl-3.3.0/bin:/opt/tcl-8.6.14/bin make install
@@ -119,7 +119,7 @@ $ cp /opt/tcl-8.6.14/bin/libtcl8.6.dll .
 $ mkdir lib
 $ cp -r /opt/tcl-8.6.14/lib/tcl8 lib
 $ cp -r /opt/tcl-8.6.14/lib/tcl8.6 lib
-$ cp /opt/unbound-1.19.3/bin/cygunbound-8.dll .
+$ cp /opt/unbound-1.20.0/bin/cygunbound-8.dll .
 
 Test under GNU/Linux Wine:
 $ uname
@@ -131,17 +131,18 @@ eggdrop.exe: PE32+ executable (console) x86-64 (stripped to external PDB), for M
 $ ./eggdrop.exe -t BotA.conf
 (or wine eggdrop -t BotA.conf)
 [...]
-Eggdrop v1.9.5+windrop-20240506 (C) 1997 Robey Pointer (C) 2010-2024 Eggheads
---- Loading eggdrop v1.9.5+windrop-20240506 (Mon May  6 2024)
+Eggdrop v1.9.5+windrop-20240509 (C) 1997 Robey Pointer (C) 2010-2024 Eggheads
+--- Loading eggdrop v1.9.5+windrop-20240509 (Thu May  9 2024)
 [...]
-Hey -HQ!  My name is BotA and I am running eggdrop v1.9.5+windrop-20240506, on CYGWIN_NT-10.0-18362 3.5.3-1.x86_64.
+Hey -HQ!  My name is BotA and I am running eggdrop v1.9.5+windrop-20240509, on CYGWIN_NT-10.0-18362 3.5.3-1.x86_64.
 [...]
 .status
 [...]
-I am BotA, running eggdrop v1.9.5+windrop-20240506: 27 users (mem: 284k).
-Online for 00:00 (terminal mode) - CPU: 00:01.20 - Cache hit: 66.7%
-Configured with: '--prefix=/opt/windrop-1.9.5-20240506' '--enable-strip' '--with-ssllib=/opt/openssl-3.3.0/lib' '--with-sslinc=/opt/openssl-3.3.0/include' '--with-tcllib=/opt/tcl-8.6.14/lib/libtcl8.6.dll.a' '--with-tclinc=/opt/tcl-8.6.14/include/tcl.h' 'C
-FLAGS=-I/opt/unbound-1.19.3/include -L/opt/unbound-1.19.3/lib -O2'
+I am BotA, running eggdrop v1.9.5+windrop-20240509: 27 users (mem: 284k).
+Online for 00:00 (terminal mode) - CPU: 00:01.22 - Cache hit: 66.7%
+Configured with: '--prefix=/opt/windrop-1.9.5-20240509' '--enable-strip' '--with-ssllib=/opt/openssl-3.3.0/lib' '--with-sslinc=
+/opt/openssl-3.3.0/include' '--with-tcllib=/opt/tcl-8.6.14/lib/libtcl8.6.dll.a' '--with-tclinc=/opt/tcl-8.6.14/include/tcl.h' '
+CFLAGS=-I/opt/unbound-1.20.0/include -L/opt/unbound-1.20.0/lib -O2'
 Admin: Lamer <email: lamer@lamest.lame.org>
 Config file: BotA.conf
 OS: CYGWIN_NT-10.0-18362 3.5.3-1.x86_64
