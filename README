@@ -1,17 +1,20 @@
 Windrop is a Cygwin Windows port of Eggdrop IRC Bot
 
-windrop-1.10.0rc1.exe is a 7-Zip self-extracting archive https://www.7-zip.org
+windrop-1.10.0.exe is a 7-Zip self-extracting archive https://www.7-zip.org
 
-$ sha256sum windrop-1.10.0rc1.exe
-4d1b101350e4314653aba4044b81cb18ff45c09376fa3859eae94545a7889be4  windrop-1.10.0rc1.exe
+$ sha256sum windrop-1.10.0.exe
+20f9d0bd3b6377bba05d1cd224937ca9764465998f898a6b0e924d04eaba78ba  windrop-1.10.0.exe
+
+$ gpg --verify windrop-1.10.0.exe.sig windrop-1.10.0.exe
+fingerprint C2B54FDEF5F8DAD225A33C2E75ACDCA5196BD13C
 
 This Windrop includes:
-- eggdrop 1.10.0rc1 https://www.eggheads.org
+- eggdrop 1.10.0 https://www.eggheads.org
 - botnetop 1.4 module https://github.com/michaelortmann/botnetop.mod
 - gseen 1.4.3 module https://github.com/michaelortmann/gseen.mod
 - stats 1.14 module https://github.com/michaelortmann/stats.mod
-- cygwin 3.5.3 https://cygwin.com
-- openssl 3.3.1 https://www.openssl.org
+- cygwin 3.5.4 https://cygwin.com
+- openssl 3.3.2 https://openssl-library.org
 - tcl 8.6.14 https://tcl.tk
 - zlib 1.3.1 https://www.zlib.net
 - 64 bit
@@ -23,29 +26,29 @@ versions.
 Eggdrop: https://www.eggheads.org
 Windrop: https://windrop.sourceforge.net
 
-How to compile (steps to reproduce) Windrop 1.10.0rc1:
+How to compile (steps to reproduce) Windrop 1.10.0:
 
 Install Cygwin, select packages:
 - autoconf2.7 2.72-1
-- automake1.16 1.16.5-2
-- binutils 2.42-1
+- automake1.17 1.17-1
+- binutils 2.43.1-1
 - gcc-core 12.4.0-3
 - git 2.45.1-1
 - make 4.4.1-2
 - mingw64-x86_64-gcc-core 12.4.0-1
 - cygwins openssl can be used:
-  libssl3 3.0.14-1 and openssl 3.0.14-1
+  libssl3 3.0.15-1 and openssl 3.0.15-1
   but i compiled openssl 3.3.1 instead
 - cygwins tcl can be used:
   tcl 8.6.12-1 and tcl-devel 8.6.12-1
   but i compiled tcl 8.6.14 instead
 - zlib-devel 1.3.1-1
 
-Compile OpenSSL 3.3.1:
-$ curl -O https://www.openssl.org/source/openssl-3.3.1.tar.gz
-$ tar -zxf openssl-3.3.1.tar.gz
-$ cd openssl-3.3.1
-$ ./config --prefix=/opt/openssl-3.3.1
+Compile OpenSSL 3.3.2:
+$ curl -LO https://github.com/openssl/openssl/releases/download/openssl-3.3.2/openssl-3.3.2.tar.gz
+$ tar -zxf openssl-3.3.2.tar.gz
+$ cd openssl-3.3.2
+$ ./config --prefix=/opt/openssl-3.3.2
 $ make
 $ make install
 
@@ -53,7 +56,9 @@ Compile Tcl 8.6.14:
 # use git instead of release tarball because 1 commit must be reverted
 $ git clone https://github.com/tcltk/tcl.git
 $ cd tcl
-$ git checkout core-8-6-14
+# the following commit is the last commit before core-8-6-15 (tcl 8.6.15
+#   release) where the following revert can be done without conflict
+$ git checkout 1920856d4b54c433163bb0b6e6567bd75aece83a
 # the following git revert is because eggdrop needs libtcl8.6.dll.a
 $ git revert b29ad5dcf260d9aa15a3a6ec5ff68a6cea255dd1
 $ cd unix
@@ -63,22 +68,23 @@ $ make install
 # the following copy is also because eggdrop needs libtcl8.6.dll.a
 $ cp libtcl8.6.dll.a /opt/tcl-8.6.14/lib/
 
-Compile Eggdrop 1.10.0rc1:
-$ git clone https://github.com/michaelortmann/eggdrop.git
-$ cd eggdrop
-$ git checkout f80f8ae468fd7bcec83407134ef5941225131104
+Compile Eggdrop 1.10.0:
+$ curl -LO https://github.com/eggheads/eggdrop/releases/download/v1.10.0/eggdrop-1.10.0.tar.gz
+$ tar -xvf eggdrop-1.10.0.tar.gz
+$ cd eggdrop-1.10.0
 $ vi src/version.h
-# #define EGG_PATCH "alpha-windrop"
+# add:
+#   define EGG_PATCH "windrop"
 $ cd src/mod
 $ git clone https://github.com/michaelortmann/botnetop.mod.git
 $ git clone https://github.com/michaelortmann/gseen.mod.git 
 $ git clone https://github.com/michaelortmann/stats.mod.git
 $ cd ../..
-$ EGG=/opt/windrop-1.10.0rc1
-$ ./configure --prefix=$EGG --enable-strip --with-ssllib=/opt/openssl-3.3.1/lib --with-sslinc=/opt/openssl-3.3.1/include --with-tcllib=/opt/tcl-8.6.14/lib/libtcl8.6.dll.a --with-tclinc=/opt/tcl-8.6.14/include/tcl.h
+$ EGG=/opt/windrop-1.10.0
+$ ./configure --prefix=$EGG --enable-strip --with-ssllib=/opt/openssl-3.3.2/lib --with-sslinc=/opt/openssl-3.3.2/include --with-tcllib=/opt/tcl-8.6.14/lib/libtcl8.6.dll.a --with-tclinc=/opt/tcl-8.6.14/include/tcl.h
 $ make config
-$ LD_LIBRARY_PATH=/opt/openssl-3.3.1/lib:/opt/tcl-8.6.14/lib PATH=$PATH:/opt/openssl-3.3.1/bin:/opt/tcl-8.6.14/bin make eggdrop
-$ LD_LIBRARY_PATH=/opt/openssl-3.3.1/lib:/opt/tcl-8.6.14/lib PATH=$PATH:/opt/openssl-3.3.1/bin:/opt/tcl-8.6.14/bin make install
+$ LD_LIBRARY_PATH=/opt/openssl-3.3.2/lib:/opt/tcl-8.6.14/lib PATH=$PATH:/opt/openssl-3.3.2/bin:/opt/tcl-8.6.14/bin make eggdrop
+$ LD_LIBRARY_PATH=/opt/openssl-3.3.2/lib:/opt/tcl-8.6.14/lib PATH=$PATH:/opt/openssl-3.3.2/bin:/opt/tcl-8.6.14/bin make install
 $ cp src/mod/botnetop.mod/botnetop.conf $EGG
 $ cp src/mod/gseen.mod/gseen.conf $EGG
 $ cp src/mod/gseen.mod/*.lang $EGG/language/
@@ -90,8 +96,8 @@ $ rm eggdrop.exe
 $ mv eggdrop.exe-1.10.0 eggdrop.exe
 $ rm -rf modules
 $ mv modules-1.10.0 modules
-$ cp /opt/openssl-3.3.1/bin/cygcrypto-3.dll .
-$ cp /opt/openssl-3.3.1/bin/cygssl-3.dll .
+$ cp /opt/openssl-3.3.2/bin/cygcrypto-3.dll .
+$ cp /opt/openssl-3.3.2/bin/cygssl-3.dll .
 $ cp /bin/cygwin1.dll .
 $ cp /bin/cygz.dll .
 $ cp /opt/tcl-8.6.14/bin/libtcl8.6.dll .
@@ -103,31 +109,34 @@ Test under GNU/Linux Wine:
 $ uname
 Linux
 $ wine --version
-wine-9.14
-$ file eggdrop.exe 
+wine-9.19
+$ file eggdrop.exe
 eggdrop.exe: PE32+ executable (console) x86-64 (stripped to external PDB), for MS Windows, 10 sections
 $ ./eggdrop.exe -t BotA.conf
 (or wine eggdrop -t BotA.conf)
 [...]
-Eggdrop v1.10.0+alpha-windrop (C) 1997 Robey Pointer (C) 1999-2024 Eggheads Development Team
---- Loading eggdrop v1.10.0+alpha-windrop (Sat Aug 10 2024)
+Eggdrop v1.10.0+windrop (C) 1997 Robey Pointer (C) 1999-2024 Eggheads Development Team
+--- Loading eggdrop v1.10.0+windrop (Thu Oct 17 2024)
 [...]
-Hey -HQ!  My name is BotA and I am running eggdrop v1.10.0+alpha-windrop, on CYGWIN_NT-10.0-19043 3.5.3-1.x86_64.
+Hey -HQ!  My name is BotA and I am running eggdrop v1.10.0+windrop, on CYGWIN_NT-10.0-19043 3.5.4-1.x86_64.
 [...]
 .status
 [...]
-I am BotA, running eggdrop v1.10.0+alpha-windrop: 28 users (mem: 277k).
-Online for 00:01 (terminal mode) - CPU: 00:02.88 - Cache hit: 66.7%
-Configured with: '--prefix=/opt/windrop-1.10.0rc1' '--enable-strip' '--with-ssllib=/opt/openssl-3.3.1/lib' '--with-sslinc=/opt/openssl-3.3.1/include' '--with-tcllib=/opt/tcl-8.6.14/lib/libtcl8.6.dll.a' '--with-tclinc=/opt/tcl-8.6.14/include/tcl.h'
+
+
+I am BotA, running eggdrop v1.10.0+windrop: 23 users (mem: 274k).
+Online for 00:00 (terminal mode) - CPU: 00:00.66 - Cache hit: 28.6%
+Configured with: '--prefix=/opt/windrop-1.10.0' '--enable-strip' '--with-ssllib=/opt/openssl-3.3.2/lib' '--with-sslinc=/opt/ope
+nssl-3.3.2/include' '--with-tcllib=/opt/tcl-8.6.14/lib/libtclstub8.6.a' '-with-tclinc=/opt/tcl-8.6.14/include/tcl.h'
 Admin: Lamer <email: lamer@lamest.lame.org>
 Config file: BotA.conf
-OS: CYGWIN_NT-10.0-19043 3.5.3-1.x86_64
-Process ID: 1026 (parent 1)
-Tcl library: /tcl8.6.14/library
-Tcl version: 8.6.14 (header version 8.6.14)
+OS: CYGWIN_NT-10.0-19043 3.5.4-1.x86_64
+Process ID: 1019 (parent 1)
+Tcl library: /tcl8.6.15/library
+Tcl version: 8.6.15 (header version 8.6.15)
 Tcl is threaded.
 TLS support is enabled.
-TLS library: OpenSSL 3.3.1 4 Jun 2024 (header version OpenSSL 3.3.1 4 Jun 2024)
+TLS library: OpenSSL 3.3.2 3 Sep 2024 (header version OpenSSL 3.3.2 3 Sep 2024)
 IPv6 support is enabled.
 Threaded DNS core is enabled.
 Socket table: 20/100
@@ -135,9 +144,9 @@ Socket table: 20/100
 
 Test under Windows Command Prompt App / cmd.exe:
 
-c:\cygwin64\opt\windrop-1.10.0rc1>eggdrop.exe -v
-Eggdrop v1.10.0+alpha-windrop (C) 1997 Robey Pointer (C) 1999-2024 Eggheads Development Team
-Configure flags: '--prefix=/opt/windrop-1.10.0rc1' '--enable-strip' '--with-ssllib=/opt/openssl-3.3.1/lib' '--with-sslinc=/opt/openssl-3.3.1/include' '--with-tcllib=/opt/tcl-8.6.14/lib/libtcl8.6.dll.a' '--with-tclinc=/opt/tcl-8.6.14/include/tcl.h'
+c:\cygwin64\opt\windrop-1.10.0>eggdrop.exe -v
+Eggdrop v1.10.0+windrop (C) 1997 Robey Pointer (C) 1999-2024 Eggheads Development Team
+Configure flags: '--prefix=/opt/windrop-1.10.0' '--enable-strip' '--with-ssllib=/opt/openssl-3.3.2/lib' '--with-sslinc=/opt/openssl-3.3.2/include' '--with-tcllib=/opt/tcl-8.6.14/lib/libtclstub8.6.a' '-with-tclinc=/opt/tcl-8.6.14/include/tcl.h'
 Compiled with: IPv6, TLS, Threaded DNS core, handlen=32
 
 Errata:
@@ -146,7 +155,7 @@ Errata:
 - tdns works well under windows, but not under wine 8.14 - 9.14
 - windrop does not include python / python.mod yet
 
-Thanks and Greetings to Eggheads and Windrop teams.
+Thanks and Greetings to Cygwin, Eggheads and Windrop teams.
 
 Enjoy,
 Michael
