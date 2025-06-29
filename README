@@ -1,21 +1,21 @@
 Windrop is a Cygwin Windows port of Eggdrop IRC Bot
 
-windrop-1.10.0-compilecleaning.exe is a 7-Zip 24.09 self-extracting archive https://www.7-zip.org
+windrop-1.10.1-RC1.exe is a 7-Zip 24.09 self-extracting archive https://www.7-zip.org
 
-$ sha256sum windrop-1.10.0-compilecleaning.exe
-05062e2fe69dcc0db84c3e89dfa21674dc3b8b15f78a0e6cb52991370af06dc9  windrop-1.10.0-compilecleaning.exe
+$ sha256sum windrop-1.10.1-RC1.exe 
+5c95a8995b7540cb25e37e1567519df33401bb4705a32a97b11f822b652d87da  windrop-1.10.1-RC1.exe
 
-$ gpg --verify windrop-1.10.0-compilecleaning.exe.sig windrop-1.10.0-compilecleaning.exe
-gpg: Signature made Wed 09 Apr 2025 12:35:26 PM CEST
+$ gpg --verify windrop-1.10.1-RC1.exe.sig windrop-1.10.1-RC1.exe
+gpg: Signature made Sun 29 Jun 2025 02:12:26 AM CEST
 gpg:                using RSA key 9117B74600C5801EE6616D86EEE2F7AD6B411573
 gpg: Good signature from "Michael Ortmann (git sign) <ortmann@posteo.de>" [ultimate]
 
 This Windrop includes:
-- eggdrop 1.10.0-compilecleaning https://www.eggheads.org
+- eggdrop 1.10.1-RC1 https://www.eggheads.org
 - botnetop 1.5 module https://github.com/michaelortmann/botnetop.mod
 - gseen 1.4.5 module https://github.com/michaelortmann/gseen.mod
 - stats 1.15 module https://github.com/michaelortmann/stats.mod
-- cygwin 3.6.0 https://cygwin.com
+- cygwin 3.6.3 https://cygwin.com
 - openssl 3.4.1 https://openssl-library.org
 - tcl 8.6.16 https://tcl.tk
 - zlib 1.3.1 https://www.zlib.net
@@ -28,7 +28,7 @@ versions.
 Eggdrop: https://www.eggheads.org
 Windrop: https://windrop.sourceforge.net
 
-How to compile (steps to reproduce) Windrop 1.10.0:
+How to compile (steps to reproduce) Windrop 1.10.1:
 
 Install Cygwin, select packages:
 - autoconf2.7 2.72-1
@@ -68,17 +68,18 @@ $ make install
 # the following copy is also because eggdrop needs libtcl8.6.dll.a
 $ cp libtcl8.6.dll.a /opt/tcl-8.6.16/lib
 
-Compile Eggdrop 1.10.0-compilecleaning:
+Compile Eggdrop 1.10.1-RC1:
 $ git clone https://github.com/eggheads/eggdrop.git
 $ cd eggdrop
+$ git checkout v1.10.1rc1
 $ vi src/version.h
-#   define EGG_PATCH "compilecleaning-windrop"
+#   define EGG_PATCH "RC1-windrop"
 $ cd src/mod
 $ git clone https://github.com/michaelortmann/botnetop.mod.git
 $ git clone https://github.com/michaelortmann/gseen.mod.git 
 $ git clone https://github.com/michaelortmann/stats.mod.git
 $ cd ../..
-$ EGG=/opt/windrop-1.10.0-compilecleaning
+$ EGG=/opt/windrop-1.10.1-RC1
 $ ./configure --prefix=$EGG --enable-strip --with-ssllib=/opt/openssl-3.4.1/lib --with-sslinc=/opt/openssl-3.4.1/include --with-tcllib=/opt/tcl-8.6.16/lib/libtcl8.6.dll.a --with-tclinc=/opt/tcl-8.6.16/include/tcl.h
 $ make config
 $ LD_LIBRARY_PATH=/opt/openssl-3.4.1/lib:/opt/tcl-8.6.16/lib PATH=$PATH:/opt/openssl-3.4.1/bin:/opt/tcl-8.6.16/bin make eggdrop
@@ -91,9 +92,9 @@ $ cp src/mod/stats.mod/language/* $EGG/language/
 $ cp -r src/mod/stats.mod/templates $EGG
 $ cd $EGG
 $ rm eggdrop.exe
-$ mv eggdrop.exe-1.10.0 eggdrop.exe
+$ mv eggdrop.exe-1.10.1 eggdrop.exe
 $ rm -rf modules
-$ mv modules-1.10.0 modules
+$ mv modules-1.10.1 modules
 $ cp /opt/openssl-3.4.1/bin/cygcrypto-3.dll .
 $ cp /opt/openssl-3.4.1/bin/cygssl-3.dll .
 $ cp /bin/cygwin1.dll .
@@ -107,27 +108,26 @@ Test under GNU/Linux Wine:
 $ uname
 Linux
 $ wine --version
-wine-10.5
-$ file eggdrop.exe 
+wine-10.9
+$ file eggdrop.exe
 eggdrop.exe: PE32+ executable for MS Windows 5.02 (console), x86-64 (stripped to external PDB), 10 sections
 $ ./eggdrop.exe -t BotA.conf
 (or wine eggdrop -t BotA.conf)
 [...]
-Eggdrop v1.10.0+compilecleaning-windrop (C) 1997 Robey Pointer (C) 1999-2024 Eggheads Development Team
---- Loading eggdrop v1.10.0+compilecleaning-windrop (Wed Apr  9 12:25:50 2025)
+Eggdrop v1.10.1+RC1-windrop (C) 1997 Robey Pointer (C) 1999-2025 Eggheads Development Team
+--- Loading eggdrop v1.10.1+RC1-windrop (Sun Jun 29 02:17:19 2025)
 [...]
-Hey -HQ!  My name is BotA and I am running eggdrop v1.10.0+compilecleaning-windrop, on CYGWIN_NT-10.0-19043 3.6.0-1.x86_64.
+Hey -HQ!  My name is BotA and I am running eggdrop v1.10.1+RC1-windrop, on CYGWIN_NT-5.2-3790 3.6.3-1.x86_64.
 [...]
 .status
 [...]
-I am BotA, running eggdrop v1.10.0+compilecleaning-windrop: 38 users (mem: 280k).
-Online for 00:00 (terminal mode) - CPU: 00:01.05 - Cache hit: 66.7%
-Configured with: '--prefix=/opt/windrop-1.10.0-compilecleaning' '--enable-strip' '--with-ssllib=/opt/openssl-3.4.1/lib' '--with-sslinc=/opt/openssl-3.4.1/include' '--with-tcllib=/opt/tcl-8.6.16/lib/libtcl8.6.dll.a' '--with-tclinc=/opt/tcl-8.6.16/include/t
-cl.h'
+I am BotA, running eggdrop v1.10.1+RC1-windrop: 39 users (mem: 284k).
+Online for 00:03 (terminal mode) - CPU: 00:05.92 - Cache hit: 66.7%
+Configured with: '--prefix=/opt/windrop-1.10.1-RC1' '--enable-strip' '--with-ssllib=/opt/openssl-3.4.1/lib' '--with-sslinc=/opt/openssl-3.4.1/include' '--with-tcllib=/opt/tcl-8.6.16/lib/libtcl8.6.dll.a' '--with-tclinc=/opt/tcl-8.6.16/include/tcl.h'
 Admin: Lamer <email: lamer@lamest.lame.org>
 Config file: BotA.conf
-OS: CYGWIN_NT-10.0-19043 3.6.0-1.x86_64
-Process ID: 1021 (parent 1)
+OS: CYGWIN_NT-5.2-3790 3.6.3-1.x86_64
+Process ID: 1020 (parent 1)
 Tcl library: /tcl8.6.16/library
 Tcl version: 8.6.16 (header version 8.6.16)
 Tcl is threaded.
